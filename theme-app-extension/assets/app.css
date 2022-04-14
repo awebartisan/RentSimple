@@ -1,0 +1,13 @@
+@import './pikaday.css';
+.start_date{
+    height: 40px !important;
+    margin-bottom: 15px;
+}
+
+.end_date{
+    height: 40px !important;
+}
+#oneDayOff{
+    height: 40px;
+    margin-top: 15px;
+}

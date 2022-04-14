@@ -1,0 +1,160 @@
+{%- if block.settings.show_lables -%}
+  <label>{{ block.settings.start_date_label }}</label>
+{%- endif -%}
+
+<input id="datePicker" type="text" name="properties[{{ block.settings.change_start_date_name }}]" autocomplete="off"  class="form-control button--full-width start_date">
+
+{%- if block.settings.show_lables -%}
+    <label>{{ block.settings.end_date_label }}</label>
+{%- endif -%}
+
+<input id="datePicker1" type="text" name="properties[{{ block.settings.change_end_date_name }}}}]" autocomplete="off" class="form-control button--full-width start_date">
+
+{% schema %}
+{
+  "name": "Date Inputs",
+  "target": "section",
+  "javascript": "app.js",
+  "stylesheet": "app.css",
+  "templates": [
+    "product"
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "info": "Disable weekends on product page",
+      "id": "disable_weekends",
+      "label": "Disable Weekends",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "info": "Show Label of date input field on product page",
+      "id": "show_lables",
+      "label": "Show Labels",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "info": "Disable all past date on product page",
+      "id": "enable_past_date",
+      "label": "Disable Past Dates",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "start_date_label",
+      "label": "Start Date Label",
+      "default": "Start Date"
+    },
+    {
+      "type": "text",
+      "info": "Change Start Date and End Date label on product page",
+      "id": "end_date_label",
+      "label": "End Date Label",
+      "default": "End Date"
+    },
+    {
+      "type": "text",
+      "id": "change_start_date_name",
+      "label": "Change Start Date Input Name",
+      "default": "_startDate"
+    },
+    {
+      "type": "text",
+      "info": "Change Start Date and End Date input name on product page",
+      "id": "change_end_date_name",
+      "label": "Change End Date Input Name",
+      "default": "_endtDate"
+    },
+    {
+      "type": "select",
+      "info": "Change date formate on product page",
+      "id": "date_format",
+      "label": "Date Format",
+      "options": [
+        {
+          "value": "D MMM YYYY",
+          "label": "D MMM YYYY"
+        },
+        {
+          "value": "Do MMMM YYYY",
+          "label": "Do MMMM YYYY"
+        },
+        {
+          "value": "YYYY-MM-DD",
+          "label": "YYYY-MM-DD"
+        }
+      ],
+      "default": "YYYY-MM-DD"
+    },
+    {
+      "type": "select",
+      "info": "Change input theme on product page",
+      "id": "theme",
+      "label": "Theme",
+      "options": [
+        {
+          "value": "",
+          "label": "Theme 1"
+        },
+        {
+          "value": "dark-theme",
+          "label": "Theme 2 (Dark)"
+        },
+        {
+          "value": "triangle-theme",
+          "label": "Theme 3"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<script src="{{ 'moment.js' | asset_url }}" defer></script>
+<script src="{{ 'pikaday.js' | asset_url }}" defer></script>
+<link rel="stylesheet" type="text/css" href="{{ 'theme.css' | asset_url }}">
+<link rel="stylesheet" type="text/css" href="{{ 'triangle.css' | asset_url }}">
+ 
+
+
+<script type="module">
+  var picker = new Pikaday({ 
+    field: document.getElementById('datePicker'), 
+    disableWeekends: {{ block.settings.disable_weekends }},
+    format: "{{ block.settings.date_format }}",
+    theme: "{{ block.settings.theme }}",
+    onSelect: function(date) {
+        setInput(this.getMoment().format("{{ block.settings.date_format }}"), "{{ block.settings.change_start_date_name }}");
+    }
+  });
+
+  {% if block.settings.enable_past_date == true %}
+    picker.setMinDate(new Date());
+  {% endif %}
+
+  var picker1 = new Pikaday({ 
+    field: document.getElementById('datePicker1'), 
+    disableWeekends: {{ block.settings.disable_weekends }},
+    format: "{{ block.settings.date_format }}" ,
+    theme: "{{ block.settings.theme }}",
+    onSelect: function(date) {
+      setInput(this.getMoment().format("{{ block.settings.date_format }}"), "{{ block.settings.change_end_date_name }}");
+    }
+  });
+  function setInput(val, name){
+    let input = document.createElement('input');
+        input.setAttribute('type', 'hidden');
+        input.setAttribute('name', 'properties["'+name+'"]');
+        input.setAttribute('value', val);
+        var form = document.querySelectorAll("form[action='/cart/add']");
+        form.forEach(function(element, index) { 
+          element.appendChild(input);
+        })
+  }
+  {% if block.settings.enable_past_date == true %}
+    picker1.setMinDate(new Date());
+  {% endif %}
+  
+</script>
